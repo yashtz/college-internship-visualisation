@@ -14,11 +14,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // Allow all requests
+                .anyRequest().permitAll()
             )
-            .csrf(csrf -> csrf.disable()) // Disable CSRF protection
-            .formLogin(form -> form.disable()) // Disable login form
-            .logout(logout -> logout.disable()); // Disable logout
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())
+            .logout(logout -> logout.disable());
         return http.build();
     }
 

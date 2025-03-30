@@ -19,4 +19,9 @@ public class InternshipController {
     public List<Internship> getAllInternships() {
         return service.getAllInternships();
     }
+
+    @GetMapping("/test")
+    public String testEndpoint() {
+        return "The backend is working!";
+    }
 }
