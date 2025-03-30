@@ -1,4 +1,4 @@
-package main.java.com.internshipPlatform.dto;
+package com.internshipPlatform.dto;
 
 import lombok.Getter;
 import lombok.Setter;

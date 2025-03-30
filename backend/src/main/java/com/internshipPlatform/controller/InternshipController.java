@@ -1,7 +1,7 @@
-package main.java.com.internshipPlatform.controller;
+package com.internshipPlatform.controller;
 
-import com.internshipplatform.model.Internship;
-import com.internshipplatform.service.InternshipService;
+import com.internshipPlatform.model.Internship;
+import com.internshipPlatform.service.InternshipService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 

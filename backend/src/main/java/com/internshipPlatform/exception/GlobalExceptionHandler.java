@@ -1,4 +1,4 @@
-package main.java.com.internshipPlatform.exception;
+package com.internshipPlatform.exception;
 
 
 import org.springframework.http.HttpStatus;

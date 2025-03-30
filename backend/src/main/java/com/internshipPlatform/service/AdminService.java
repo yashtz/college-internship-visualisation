@@ -1,7 +1,7 @@
-package main.java.com.internshipPlatform.service;
+package com.internshipPlatform.service;
 
-import com.internshipplatform.model.Admin;
-import com.internshipplatform.repository.AdminRepository;
+import com.internshipPlatform.model.Admin;
+import com.internshipPlatform.repository.AdminRepository;
 import org.springframework.stereotype.Service;
 
 @Service

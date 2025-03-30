@@ -1,7 +1,7 @@
-package main.java.com.internshipPlatform.model;
+package com.internshipPlatform.model;
 import lombok.Getter;
 import lombok.Setter;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

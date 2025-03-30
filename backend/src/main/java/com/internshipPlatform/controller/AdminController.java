@@ -1,4 +1,4 @@
-package main.java.com.internshipPlatform.controller;
+package com.internshipPlatform.controller;
 
 public class AdminController {
     

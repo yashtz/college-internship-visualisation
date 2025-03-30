@@ -1,4 +1,4 @@
-package main.java.com.internshipPlatform.service;
+package com.internshipPlatform.service;
 
 import com.internshipPlatform.model.Internship;
 import com.internshipPlatform.repository.InternshipRepository;
