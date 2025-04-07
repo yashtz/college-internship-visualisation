@@ -2,26 +2,23 @@ package com.internshipPlatform.controller;
 
 import com.internshipPlatform.model.Internship;
 import com.internshipPlatform.service.InternshipService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/internships")
+@RequestMapping("/api/internships")
+@CrossOrigin(origins = "http://localhost:3000") // Allow React frontend to access
 public class InternshipController {
 
-    private final InternshipService service;
-
-    public InternshipController(InternshipService service) {
-        this.service = service;
-    }
+    @Autowired
+    private InternshipService internshipService;
 
     @GetMapping
-    public List<Internship> getAllInternships() {
-        return service.getAllInternships();
-    }
-
-    @GetMapping("/test")
-    public String testEndpoint() {
-        return "The backend is working!";
+    public ResponseEntity<List<Internship>> getAllInternships() {
+        List<Internship> internships = internshipService.getAllInternships();
+        return ResponseEntity.ok(internships);
     }
 }
