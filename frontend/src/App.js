@@ -1,50 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import Papa from 'papaparse';
+import axios from 'axios';
 import './App.css';
-
-// Import Chart.js components
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, RadialLinearScale, PointElement } from 'chart.js';
 import { Pie, Bar, PolarArea } from 'react-chartjs-2';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
 
-// Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, RadialLinearScale, PointElement);
 
 function App() {
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Filter states
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const [locationFilter, setLocationFilter] = useState('All');
   const [durationFilter, setDurationFilter] = useState('All');
-  
-  useEffect(() => {
-    // Load and parse the CSV file
-    fetch('/internship.csv')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch internship data');
+
+  const fetchInternships = async () => {
+    try {
+      console.log('Attempting to fetch internships...');
+      const response = await axios.get('http://localhost:8080/api/internships', {
+        timeout: 5000,
+        withCredentials: false,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
-        return response.text();
-      })
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          complete: (results) => {
-            setInternships(results.data.filter(item => Object.keys(item).length > 1)); // Filter out empty rows
-            setLoading(false);
-          },
-          error: (error) => {
-            setError('Error parsing CSV: ' + error.message);
-            setLoading(false);
-          }
-        });
-      })
-      .catch(err => {
-        setError('Error fetching data: ' + err.message);
-        setLoading(false);
       });
+      console.log('Response received:', response.data);
+      setInternships(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error details:', err);
+      if (err.code === 'ERR_NETWORK') {
+        setError('Network error: Please check if the backend server is running');
+      } else {
+        setError('Failed to fetch internship data: ' + (err.response?.data?.message || err.message));
+      }
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInternships();
   }, []);
+
+  const handleLoginSuccess = () => {
+    setIsAdmin(true);
+    setShowLoginForm(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsAdmin(false);
+  };
   
   // Get unique locations and durations for filters
   const locations = ['All', ...new Set(internships.map(item => item.location))];
@@ -92,7 +103,6 @@ function App() {
     if (stipend === 'Unpaid') {
       stipendCategories['Unpaid']++;
     } else {
-      // Extract the numeric value from the stipend string
       const match = stipend.match(/₹\s*([\d,]+)(?:\s*-\s*([\d,]+))?\s*\/month/);
       if (match) {
         const minValue = parseInt(match[1].replace(/,/g, ''));
@@ -146,11 +156,9 @@ function App() {
   // Prepare data for profile distribution chart
   const profileCategories = {};
   
-  // Extract and count unique profiles
   filteredInternships.forEach(internship => {
     const profile = internship.internship_title;
     if (profile) {
-      // Group similar profiles together
       let category = profile;
       if (profile.includes('Marketing') || profile.includes('Social Media')) {
         category = 'Marketing';
@@ -172,7 +180,6 @@ function App() {
     }
   });
   
-  // Sort by count and take top 6 categories
   const sortedProfiles = Object.entries(profileCategories)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
@@ -196,7 +203,6 @@ function App() {
     ],
   };
   
-  // Options for bar chart
   const barOptions = {
     responsive: true,
     plugins: {
@@ -214,116 +220,127 @@ function App() {
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="dashboard">
-      <header className="dashboard-header">
-        <h1>Internship Dashboard</h1>
-      </header>
-      
-      <div className="filters">
-        <div className="filter-group">
-          <label htmlFor="location-filter">Location:</label>
-          <select 
-            id="location-filter" 
-            value={locationFilter} 
-            onChange={(e) => setLocationFilter(e.target.value)}
-          >
-            {locations.map(location => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
-        </div>
-        
-        <div className="filter-group">
-          <label htmlFor="duration-filter">Duration:</label>
-          <select 
-            id="duration-filter" 
-            value={durationFilter} 
-            onChange={(e) => setDurationFilter(e.target.value)}
-          >
-            {durations.map(duration => (
-              <option key={duration} value={duration}>{duration}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-      
-      <div className="dashboard-summary">
-        <div className="summary-card">
-          <h3>Total Internships</h3>
-          <p className="summary-value">{filteredInternships.length}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Work From Home</h3>
-          <p className="summary-value">
-            {filteredInternships.filter(item => item.location === 'Work From Home').length}
-          </p>
-        </div>
-        <div className="summary-card">
-          <h3>Paid Internships</h3>
-          <p className="summary-value">
-            {filteredInternships.filter(item => item.stipend !== 'Unpaid').length}
-          </p>
-        </div>
-      </div>
-      
-      <div className="charts-container">
-        <div className="chart-card">
-          <h3>Location Distribution</h3>
-          <div className="chart-wrapper">
-            <Pie data={locationData} />
+    <div className="App">
+      <nav>
+        <button onClick={() => setShowLoginForm(true)}>Admin Login</button>
+        {isAdmin && <button onClick={handleLogout}>Logout</button>}
+      </nav>
+
+      {showLoginForm && !isAdmin && (
+        <AdminLogin onLoginSuccess={handleLoginSuccess} onClose={() => setShowLoginForm(false)} />
+      )}
+
+      {isAdmin ? (
+        <AdminDashboard internships={internships} onInternshipUpdate={fetchInternships} />
+      ) : (
+        <>
+          <div className="filters">
+            <div className="filter-group">
+              <label htmlFor="location-filter">Location:</label>
+              <select 
+                id="location-filter" 
+                value={locationFilter} 
+                onChange={(e) => setLocationFilter(e.target.value)}
+              >
+                {locations.map(location => (
+                  <option key={location} value={location}>{location}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="filter-group">
+              <label htmlFor="duration-filter">Duration:</label>
+              <select 
+                id="duration-filter" 
+                value={durationFilter} 
+                onChange={(e) => setDurationFilter(e.target.value)}
+              >
+                {durations.map(duration => (
+                  <option key={duration} value={duration}>{duration}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
-        
-        <div className="chart-card">
-          <h3>Stipend Distribution</h3>
-          <div className="chart-wrapper">
-            <Pie data={stipendData} />
+          
+          <div className="dashboard-summary">
+            <div className="summary-card">
+              <h3>Total Internships</h3>
+              <p className="summary-value">{filteredInternships.length}</p>
+            </div>
+            <div className="summary-card">
+              <h3>Work From Home</h3>
+              <p className="summary-value">
+                {filteredInternships.filter(item => item.location === 'Work From Home').length}
+              </p>
+            </div>
+            <div className="summary-card">
+              <h3>Paid Internships</h3>
+              <p className="summary-value">
+                {filteredInternships.filter(item => item.stipend !== 'Unpaid').length}
+              </p>
+            </div>
           </div>
-        </div>
-        
-        <div className="chart-card">
-          <h3>Profile Distribution</h3>
-          <div className="chart-wrapper">
-            <PolarArea data={profileData} />
+          
+          <div className="charts-container">
+            <div className="chart-card">
+              <h3>Location Distribution</h3>
+              <div className="chart-wrapper">
+                <Pie data={locationData} />
+              </div>
+            </div>
+            
+            <div className="chart-card">
+              <h3>Stipend Distribution</h3>
+              <div className="chart-wrapper">
+                <Pie data={stipendData} />
+              </div>
+            </div>
+            
+            <div className="chart-card">
+              <h3>Profile Distribution</h3>
+              <div className="chart-wrapper">
+                <PolarArea data={profileData} />
+              </div>
+            </div>
+            
+            <div className="chart-card">
+              <h3>Duration Distribution</h3>
+              <div className="chart-wrapper">
+                <Bar data={durationData} options={barOptions} />
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <div className="chart-card">
-          <h3>Duration Distribution</h3>
-          <div className="chart-wrapper">
-            <Bar data={durationData} options={barOptions} />
+          
+          <div className="internship-table-container">
+            <h3>Internship Listings</h3>
+            <table className="internship-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Company</th>
+                  <th>Location</th>
+                  <th>Duration</th>
+                  <th>Stipend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredInternships.slice(0, 10).map((internship, index) => (
+                  <tr key={internship._id}>
+                    <td>{internship.title}</td>
+                    <td>{internship.company}</td>
+                    <td>{internship.location}</td>
+                    <td>{internship.duration}</td>
+                    <td>{internship.stipend}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {filteredInternships.length > 10 && (
+              <p className="table-note">Showing 10 of {filteredInternships.length} internships</p>
+            )}
           </div>
-        </div>
-      </div>
-      
-      <div className="internship-table-container">
-        <h3>Internship Listings</h3>
-        <table className="internship-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Company</th>
-              <th>Location</th>
-              <th>Duration</th>
-              <th>Stipend</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredInternships.slice(0, 10).map((internship, index) => (
-              <tr key={index}>
-                <td>{internship.internship_title}</td>
-                <td>{internship.company_name}</td>
-                <td>{internship.location}</td>
-                <td>{internship.duration}</td>
-                <td>{internship.stipend}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredInternships.length > 10 && (
-          <p className="table-note">Showing 10 of {filteredInternships.length} internships</p>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import App from './App';
-import Admin from './Admin';
 import './AppRouter.css';
+
 
 function AppRouter() {
   return (
@@ -14,16 +14,12 @@ function AppRouter() {
             <li>
               <Link to="/">Dashboard</Link>
             </li>
-            <li>
-              <Link to="/admin">Admin</Link>
-            </li>
           </ul>
         </nav>
 
         <div className="content-container">
           <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/*" element={<App />} />
           </Routes>
         </div>
       </div>

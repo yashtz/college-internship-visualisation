@@ -257,3 +257,128 @@
     font-size: 14px;
   }
 }
+
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.auth-buttons {
+  margin-left: auto;
+}
+
+/* Remove the duplicate login/logout button styles and update them */
+.login-button, .logout-button {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: white;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 0 10px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.login-button::before, .logout-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.login-button:hover::before, .logout-button:hover::before {
+  transform: translateX(100%);
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3);
+}
+
+.logout-button {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.3);
+}
+
+.auth-buttons {
+  margin-left: auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.login-button {
+  background-color: #2196F3;
+}
+
+.logout-button {
+  background-color: #f44336;
+}
+
+.login-button:hover {
+  background-color: #1976D2;
+}
+
+.logout-button:hover {
+  background-color: #D32F2F;
+}
+
+
+/* Add these styles to your existing App.css */
+.admin-dashboard {
+  padding: 20px;
+}
+
+.admin-dashboard h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.admin-dashboard .internship-table input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.admin-dashboard .internship-table button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+.admin-dashboard .internship-table button:first-child {
+  background-color: #3498db;
+}
+
+.admin-dashboard .internship-table button:last-child {
+  background-color: #e74c3c;
+}
+
+.admin-dashboard .internship-table button:hover {
+  opacity: 0.9;
+}

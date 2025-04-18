@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",
+    "axios": "^1.8.4",
     "chart.js": "^4.4.8",
     "papaparse": "^5.5.2",
     "postcss": "^8.5.3",

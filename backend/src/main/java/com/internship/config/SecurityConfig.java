@@ -33,8 +33,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("http://localhost:[*]");  // Changed from setAllowedOrigins
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
+        configuration.addAllowedOrigin("http://localhost:3000");  // Frontend URL
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(
             "Authorization",
             "Content-Type",
@@ -43,9 +43,7 @@ public class SecurityConfig {
             "Access-Control-Request-Method",
             "Access-Control-Request-Headers"
         ));
-        configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
